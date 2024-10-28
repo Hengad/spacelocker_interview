@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FizzBuzz</title>
+</head>
+<body>
+    <div>
+        <p>Fizz Number:</span></p>
+        <input type="number" id="inputFizz"/>
+
+        <p>Buzz Number:</span></p>
+        <input type="number" id="inputBuzz" />
+
+        <p>Start:</span></p>
+        <input type="number" id="inputStart" />
+
+        <p>End:</span></p>
+        <input type="number" id="inputEnd" />
+
+        <p></p>
+        <p><span id="result"></span></p>
+    </div>
+
+    <button onclick="update()">Update</button>
+
+    <script>
+        // Fetch the data from the server
+        async function fetchData() {
+            const response1 = await fetch('/api/parameters');
+            const data1 = await response1.json();
+            document.getElementById('inputFizz').value = data1.fizz_nb;
+            document.getElementById('inputBuzz').value = data1.buzz_nb;
+            document.getElementById('inputStart').value = data1.start;
+            document.getElementById('inputEnd').value = data1.end;
+
+            const response2 = await fetch('/api/result');
+            const data2 = await response2.json();
+            document.getElementById('result').innerText = data2;
+        }
+
+        // Update all parameters and fetch the result
+        async function update() {
+            const parameters = [
+                { id: 'fizz_nb', value: parseFloat(document.getElementById('inputFizz').value) },
+                { id: 'buzz_nb', value: parseFloat(document.getElementById('inputBuzz').value) },
+                { id: 'start', value: parseFloat(document.getElementById('inputStart').value) },
+                { id: 'end', value: parseFloat(document.getElementById('inputEnd').value) }
+            ];
+
+            for (const { id, value } of parameters) {
+                await fetch(`/api/parameter/${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ value })
+                });
+            }
+
+            fetchData();
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>
